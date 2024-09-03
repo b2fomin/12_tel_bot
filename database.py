@@ -1,6 +1,8 @@
 import aiosqlite
 
-async def create_table(db_name):
+DB_NAME_DEFAULT = 'quiz_bot.db'
+
+async def create_table(db_name=DB_NAME_DEFAULT):
     # Создаем соединение с базой данных (если она не существует, то она будет создана)
     async with aiosqlite.connect(db_name) as db:
         # Выполняем SQL-запрос к базе данных
@@ -8,7 +10,7 @@ async def create_table(db_name):
         # Сохраняем изменения
         await db.commit()
 
-async def update_quiz_index(user_id, index, db_name):
+async def update_quiz_index(user_id, index, db_name=DB_NAME_DEFAULT):
     # Создаем соединение с базой данных (если она не существует, она будет создана)
     async with aiosqlite.connect(db_name) as db:
         # Вставляем новую запись или заменяем ее, если с данным user_id уже существует
@@ -16,7 +18,7 @@ async def update_quiz_index(user_id, index, db_name):
         # Сохраняем изменения
         await db.commit()
 
-async def get_quiz_index(user_id, db_name):
+async def get_quiz_index(user_id, db_name=DB_NAME_DEFAULT):
      # Подключаемся к базе данных
      async with aiosqlite.connect(db_name) as db:
         # Получаем запись для заданного пользователя

@@ -1,8 +1,10 @@
 from aiogram.filters.command import Command
-from aiogram import types, Dispatcher
-from aiogram.utils.keyboard import InlineKeyboardBuilder, ReplyKeyboardBuilder
-from main import dp
+from aiogram import types
+from aiogram.utils.keyboard import ReplyKeyboardBuilder
 import utils
+from aiogram import Dispatcher
+
+dp = Dispatcher()
 
 # Хэндлер на команду /start
 @dp.message(Command("start"))

@@ -1,4 +1,4 @@
-from main import dp
+from buttons import dp
 from aiogram import types, F
 from quiz_data import quiz_data
 import database as db

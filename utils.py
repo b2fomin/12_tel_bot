@@ -18,7 +18,7 @@ async def get_question(message, user_id):
     # Запрашиваем из базы текущий индекс для вопроса
     current_question_index = await db.get_quiz_index(user_id)
     # Получаем индекс правильного ответа для текущего вопроса
-    correct_index = db.quiz_data[current_question_index]['correct_option']
+    correct_index = quiz_data[current_question_index]['correct_option']
     # Получаем список вариантов ответа для текущего вопроса
     opts = quiz_data[current_question_index]['options']
 
