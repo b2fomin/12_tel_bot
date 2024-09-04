@@ -2,23 +2,21 @@ import database as db
 from quiz_data import quiz_data
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from aiogram import types
-from aiogram.filters.callback_data import CallbackData
+from callbacks_classes import AnswerCallback
 
-class AnswerCallback(CallbackData, prefix='ans_call'):
-    answer_index: int
-
-async def new_quiz(message):
+async def new_quiz(message, new_score=True):
     # получаем id пользователя, отправившего сообщение
     user_id = message.from_user.id
     # сбрасываем значение текущего индекса вопроса квиза в 0
     current_question_index = 0
-    await db.update_score(user_id, 0)
+    if new_score:
+        await db.update_score(user_id, 0)
     await db.update_quiz_index(user_id, current_question_index)
 
     # запрашиваем новый вопрос для квиза
-    await get_question(message, user_id)
+    await get_question(message, user_id, new_score)
 
-async def get_question(message, user_id):
+async def get_question(message, user_id, new_score):
 
     # Запрашиваем из базы текущий индекс для вопроса
     current_question_index = await db.get_quiz_index(user_id)
@@ -27,11 +25,11 @@ async def get_question(message, user_id):
 
     # Функция генерации кнопок для текущего вопроса квиза
     # В качестве аргументов передаем варианты ответов и значение правильного ответа (не индекс!)
-    kb = generate_options_keyboard(opts)
+    kb = generate_options_keyboard(opts, new_score)
     # Отправляем в чат сообщение с вопросом, прикрепляем сгенерированные кнопки
     await message.answer(f"{quiz_data[current_question_index]['question']}", reply_markup=kb)
 
-def generate_options_keyboard(answer_options):
+def generate_options_keyboard(answer_options, new_score):
   # Создаем сборщика клавиатур типа Inline
     builder = InlineKeyboardBuilder()
 
@@ -40,7 +38,7 @@ def generate_options_keyboard(answer_options):
         builder.add(types.InlineKeyboardButton(
             # Текст на кнопках соответствует вариантам ответов
             text=option,
-            callback_data=AnswerCallback(answer_index=i).pack())
+            callback_data=AnswerCallback(new_score=new_score, answer_index=i).pack())
         )
 
     # Выводим по одной кнопке в столбик

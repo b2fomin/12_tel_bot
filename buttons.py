@@ -1,7 +1,7 @@
 from aiogram.filters.command import Command
 from aiogram import types
-from aiogram.utils.keyboard import ReplyKeyboardBuilder
-import utils
+from aiogram.utils.keyboard import ReplyKeyboardBuilder, InlineKeyboardBuilder
+from callbacks_classes import NewScoreCallback
 from aiogram import Dispatcher
 
 dp = Dispatcher()
@@ -24,5 +24,8 @@ from aiogram import F
 async def cmd_quiz(message: types.Message):
     # Отправляем новое сообщение без кнопок
     await message.answer(f"Давайте начнем квиз!")
-    # Запускаем новый квиз
-    await utils.new_quiz(message)
+    builder = InlineKeyboardBuilder()
+    builder.add(types.InlineKeyboardButton(text='Да', callback_data=NewScoreCallback(new_score=True).pack()))
+    builder.add(types.InlineKeyboardButton(text='Нет', callback_data=NewScoreCallback(new_score=False).pack()))
+    await message.answer("Обнулить предыдущий результат?", reply_markup=builder.as_markup())
+    builder.adjust(1)

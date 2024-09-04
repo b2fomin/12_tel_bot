@@ -6,7 +6,7 @@ async def create_table(db_name=DB_NAME_DEFAULT):
     # Создаем соединение с базой данных (если она не существует, то она будет создана)
     async with aiosqlite.connect(db_name) as db:
         # Выполняем SQL-запрос к базе данных
-        await db.execute('''CREATE TABLE IF NOT EXISTS quiz_state (user_id INTEGER PRIMARY KEY, question_index INTEGER, score INTEGER)''')
+        await db.execute('CREATE TABLE IF NOT EXISTS quiz_state (user_id INTEGER PRIMARY KEY, question_index INTEGER, score INTEGER)')
         # Сохраняем изменения
         await db.commit()
 
@@ -22,7 +22,7 @@ async def get_quiz_index(user_id, db_name=DB_NAME_DEFAULT):
      # Подключаемся к базе данных
      async with aiosqlite.connect(db_name) as db:
         # Получаем запись для заданного пользователя
-        async with db.execute('SELECT question_index FROM quiz_state WHERE user_id = (?)', (user_id, )) as cursor:
+        async with db.execute(f'SELECT question_index FROM quiz_state WHERE user_id = {user_id}') as cursor:
             # Возвращаем результат
             results = await cursor.fetchone()
             if results is not None:
@@ -40,10 +40,23 @@ async def get_score(user_id, db_name=DB_NAME_DEFAULT):
      # Подключаемся к базе данных
      async with aiosqlite.connect(db_name) as db:
         # Получаем запись для заданного пользователя
-        async with db.execute('SELECT score FROM quiz_state WHERE user_id = (?)', (user_id, )) as cursor:
+        async with db.execute(f'SELECT score FROM quiz_state WHERE user_id = {user_id}') as cursor:
             # Возвращаем результат
             results = await cursor.fetchone()
+            print(results)
             if results is not None:
                 return results[0]
             else:
                 return 0
+
+async def get_stats(db_name=DB_NAME_DEFAULT):
+    # Подключаемся к базе данных
+     async with aiosqlite.connect(db_name) as db:
+        # Получаем запись для заданного пользователя
+        async with db.execute('SELECT user_id FROM quiz_state SORT BY score DSC') as cursor:
+            # Возвращаем результат
+            results = await cursor.fetchall()
+            if results is not None:
+                return results
+            else:
+                return []

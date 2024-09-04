@@ -9,7 +9,7 @@ from database import create_table
 logging.basicConfig(level=logging.INFO)
 
 # Замените "YOUR_BOT_TOKEN" на токен, который вы получили от BotFather
-API_TOKEN = '7078851959:AAH6aahc7xDC581Ozje15QOK1nU9VW1Tn-k'
+API_TOKEN = 'YOUR_BOT_TOKEN'
 
 
 # Объект бота
