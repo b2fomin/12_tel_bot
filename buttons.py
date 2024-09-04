@@ -27,5 +27,5 @@ async def cmd_quiz(message: types.Message):
     builder = InlineKeyboardBuilder()
     builder.add(types.InlineKeyboardButton(text='Да', callback_data=NewScoreCallback(new_score=True).pack()))
     builder.add(types.InlineKeyboardButton(text='Нет', callback_data=NewScoreCallback(new_score=False).pack()))
-    await message.answer("Обнулить предыдущий результат?", reply_markup=builder.as_markup())
+    await message.answer("Обнулить предыдущий результат?", reply_markup=builder.as_markup(resize_keyboard=True))
     builder.adjust(1)

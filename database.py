@@ -22,7 +22,7 @@ async def get_quiz_index(user_id, db_name=DB_NAME_DEFAULT):
      # Подключаемся к базе данных
      async with aiosqlite.connect(db_name) as db:
         # Получаем запись для заданного пользователя
-        async with db.execute(f'SELECT question_index FROM quiz_state WHERE user_id = {user_id}') as cursor:
+        async with db.execute('SELECT question_index FROM quiz_state WHERE user_id = ?', (user_id,)) as cursor:
             # Возвращаем результат
             results = await cursor.fetchone()
             if results is not None:
@@ -40,7 +40,7 @@ async def get_score(user_id, db_name=DB_NAME_DEFAULT):
      # Подключаемся к базе данных
      async with aiosqlite.connect(db_name) as db:
         # Получаем запись для заданного пользователя
-        async with db.execute(f'SELECT score FROM quiz_state WHERE user_id = {user_id}') as cursor:
+        async with db.execute('SELECT score FROM quiz_state WHERE user_id = ?', (user_id,)) as cursor:
             # Возвращаем результат
             results = await cursor.fetchone()
             print(results)
