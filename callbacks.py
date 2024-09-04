@@ -1,53 +1,28 @@
 from buttons import dp
-from aiogram import types, F
+from aiogram import types
 from quiz_data import quiz_data
 import database as db
 import utils
+from utils import AnswerCallback
 
-@dp.callback_query(F.data == "right_answer")
+@dp.callback_query(AnswerCallback.filter())
 async def right_answer(callback: types.CallbackQuery):
-    # редактируем текущее сообщение с целью убрать кнопки (reply_markup=None)
-    await callback.bot.edit_message_reply_markup(
-        chat_id=callback.from_user.id,
-        message_id=callback.message.message_id,
-        reply_markup=None
-    )
+    data = callback.data
+    data_idx = int(data.split(':')[1])
 
     # Получение текущего вопроса для данного пользователя
     current_question_index = await db.get_quiz_index(callback.from_user.id)
-
-    # Отправляем в чат сообщение, что ответ верный
-    await callback.message.answer("Верно!")
-
-    # Обновление номера текущего вопроса в базе данных
-    current_question_index += 1
-    await db.update_quiz_index(callback.from_user.id, current_question_index)
-
-    # Проверяем достигнут ли конец квиза
-    if current_question_index < len(quiz_data):
-        # Следующий вопрос
-        await utils.get_question(callback.message, callback.from_user.id)
+    user_answer = quiz_data[current_question_index]['options'][data_idx]
+    right_answer_idx = quiz_data[current_question_index]['correct_option']
+    right_answer = quiz_data[current_question_index]['options'][right_answer_idx]
+    if user_answer == right_answer:
+        await callback.message.answer(f'Ваш ответ {user_answer} верен!')
     else:
-        # Уведомление об окончании квиза
-        await callback.message.answer("Это был последний вопрос. Квиз завершен!")
+        await callback.message.answer(f'Ваш ответ {user_answer} неверен!\n Правильный ответ: {right_answer}')
 
-
-@dp.callback_query(F.data == "wrong_answer")
-async def wrong_answer(callback: types.CallbackQuery):
-    # редактируем текущее сообщение с целью убрать кнопки (reply_markup=None)
-    await callback.bot.edit_message_reply_markup(
+    await callback.bot.delete_message(
         chat_id=callback.from_user.id,
-        message_id=callback.message.message_id,
-        reply_markup=None
-    )
-
-    # Получение текущего вопроса для данного пользователя
-    current_question_index = await db.get_quiz_index(callback.from_user.id)
-
-    correct_option = quiz_data[current_question_index]['correct_option']
-
-    # Отправляем в чат сообщение об ошибке с указанием верного ответа
-    await callback.message.answer(f"Неправильно. Правильный ответ: {quiz_data[current_question_index]['options'][correct_option]}")
+        message_id=callback.message.message_id)
 
     # Обновление номера текущего вопроса в базе данных
     current_question_index += 1
