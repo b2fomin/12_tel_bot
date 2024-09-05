@@ -4,9 +4,8 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder
 from aiogram import types
 from callbacks_classes import AnswerCallback
 
-async def new_quiz(message, new_score=True):
+async def new_quiz(user_id, message, new_score=True):
     # получаем id пользователя, отправившего сообщение
-    user_id = message.from_user.id
     # сбрасываем значение текущего индекса вопроса квиза в 0
     current_question_index = 0
     if new_score:
@@ -44,3 +43,6 @@ def generate_options_keyboard(answer_options, new_score):
     # Выводим по одной кнопке в столбик
     builder.adjust(1)
     return builder.as_markup()
+
+async def get_stats():
+    return await db.get_stats()
