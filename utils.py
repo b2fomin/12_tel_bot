@@ -4,11 +4,11 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder
 from aiogram import types
 from callbacks_classes import AnswerCallback
 
-async def new_quiz(user_id, message, new_score=True):
+async def new_quiz(user_id, message, new_score='True'):
     # получаем id пользователя, отправившего сообщение
     # сбрасываем значение текущего индекса вопроса квиза в 0
     current_question_index = 0
-    if new_score:
+    if new_score == 'True':
         await db.update_score(user_id, 0)
     await db.update_quiz_index(user_id, current_question_index)
 
